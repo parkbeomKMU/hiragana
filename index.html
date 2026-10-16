@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>히라가나 외우기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Klee+One:wght@400;600&display=swap">
+<style>
+:root{
+  --paper:#EDF2EC;
+  --surface:#FFFFFF;
+  --ink:#1D2B3A;
+  --ink-soft:#5A6977;
+  --guide:#BCCFC3;
+  --line:#D2DDD5;
+  --red:#D2392B;
+  --red-soft:#FCE8E5;
+  --ok:#23704C;
+  --ok-soft:#E1F1E8;
+  --kana:"Klee One","Gowun Dodum","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+  --ui:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --sq:min(64vw,260px);
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1B2923; --surface:#23352C; --ink:#EEF3EC; --ink-soft:#A6B8AD;
+    --guide:#3F584B; --line:#34493E; --red:#FF7B69; --red-soft:#4B2D29;
+    --ok:#86D9AC; --ok-soft:#21402F; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1B2923; --surface:#23352C; --ink:#EEF3EC; --ink-soft:#A6B8AD;
+  --guide:#3F584B; --line:#34493E; --red:#FF7B69; --red-soft:#4B2D29;
+  --ok:#86D9AC; --ok-soft:#21402F; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0}
+[hidden]{display:none !important}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.6;min-height:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+
+.app{max-width:560px;margin:0 auto;padding:22px 16px 48px}
+
+/* practice-notebook square with dashed cross guides */
+.sq{position:relative;display:grid;place-items:center;background:var(--surface);border:2px solid var(--ink);border-radius:3px;padding:0}
+.sq::before,.sq::after{content:"";position:absolute;pointer-events:none}
+.sq::before{left:50%;top:0;bottom:0;border-left:1.5px dashed var(--guide)}
+.sq::after{top:50%;left:0;right:0;border-top:1.5px dashed var(--guide)}
+.sq > *{position:relative;z-index:1}
+
+/* header */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.hero{display:flex;gap:5px;margin-bottom:10px}
+.hero .sq{width:2.6rem;height:2.6rem;border-width:1.5px;font-family:var(--kana);font-size:1.75rem;line-height:1;font-weight:600}
+h1{font-size:1.45rem;font-weight:400;line-height:1.25;letter-spacing:-0.01em}
+.sound{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;font-size:.85rem;color:var(--ink-soft)}
+.sound svg{width:18px;height:18px}
+.sound .slash{display:none}
+.sound.off .slash{display:inline}
+.sound.off .waves{display:none}
+
+.progress{margin-top:16px;display:flex;align-items:center;gap:12px}
+.meter{display:grid;grid-template-columns:repeat(23,1fr);gap:3px;flex:1;max-width:300px}
+.meter i{display:block;aspect-ratio:1;border:1px solid var(--line);background:var(--surface);border-radius:1px}
+.meter i.on{background:var(--red);border-color:var(--red)}
+.meter-text{font-size:.85rem;color:var(--ink-soft);white-space:nowrap}
+.meter-text b{font-weight:400;color:var(--ink);font-size:1rem}
+
+/* tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 0;margin-top:10px}
+.tab{border:1.5px solid var(--line);background:var(--surface);color:var(--ink-soft);padding:10px 4px;border-radius:10px;font-size:.98rem}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+.lead{color:var(--ink-soft);font-size:.92rem;margin:4px 0 16px;max-width:36em}
+
+/* row picker */
+.picker{margin:6px 0 18px}
+.picker-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:.9rem;color:var(--ink-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--kana);font-size:.98rem;border:1.5px solid var(--line);background:transparent;color:var(--ink-soft);border-radius:999px;padding:5px 13px;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--surface);border-color:var(--ink);color:var(--ink);font-weight:600}
+.chip.all{font-family:var(--ui);border-style:dashed}
+.picker-note{font-size:.82rem;color:var(--red);margin-top:6px;min-height:1.2em}
+
+/* chart */
+.chart{display:grid;grid-template-columns:1.3rem repeat(5,minmax(0,1fr));gap:6px}
+.colhead,.rowhead{font-size:.82rem;color:var(--ink-soft);display:flex;align-items:center;justify-content:center}
+.colhead{padding-bottom:2px}
+.cell{position:relative;aspect-ratio:1/1.08;background:var(--surface);border:1.5px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;color:var(--ink)}
+.cell .k{font-family:var(--kana);font-size:clamp(1.45rem,6.4vw,2.05rem);line-height:1.1;font-weight:600}
+.cell .r{font-size:.74rem;color:var(--ink-soft);line-height:1.2}
+.cell.empty{background:transparent;border-style:dashed}
+.cell.blank{visibility:hidden}
+.cell.m::after{content:"";position:absolute;top:4px;right:4px;width:10px;height:10px;border:2px solid var(--red);border-radius:50%}
+@media (hover:hover){ .cell:not(.empty):hover{border-color:var(--ink)} }
+.legend{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--ink-soft);margin-top:14px}
+.legend i{width:10px;height:10px;border:2px solid var(--red);border-radius:50%;flex:none}
+
+/* shared stage */
+.stage{display:flex;flex-direction:column;align-items:center;gap:16px;padding-top:4px}
+.sq.lg{width:var(--sq);height:var(--sq)}
+.big{font-family:var(--kana);font-size:calc(var(--sq) * .62);line-height:1;font-weight:400}
+.big.ko{font-family:var(--ui);font-size:calc(var(--sq) * .4);transform:translateY(-6%)}
+.sq > .prompt-ro{position:absolute;left:0;right:0;bottom:9%;text-align:center;color:var(--ink-soft);font-size:1.1rem}
+.counter{font-size:.88rem;color:var(--ink-soft)}
+
+.btn{border:1.5px solid var(--ink);background:var(--surface);color:var(--ink);border-radius:12px;padding:12px 18px;min-height:50px;font-size:1rem}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn-row{display:flex;gap:10px;width:100%;max-width:420px}
+.btn-row .btn{flex:1}
+.btn.ghost{border-color:var(--line);color:var(--ink-soft);background:transparent}
+
+/* cards */
+button.sq{cursor:pointer;color:var(--ink)}
+.reveal{text-align:center;min-height:6.4em;visibility:hidden;opacity:0;max-width:420px}
+.reveal.show{visibility:visible;opacity:1;transition:opacity .2s ease}
+.reveal .read{font-size:1.6rem;line-height:1.3}
+.reveal .read span{font-size:1rem;color:var(--ink-soft);margin-left:6px}
+.reveal .tip{font-size:.92rem;color:var(--ink-soft);margin-top:4px}
+.done{text-align:center;padding:40px 0 10px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.done .flower{width:120px;height:120px}
+.done p{font-size:1.15rem}
+
+/* quiz */
+.quiz-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:8px 12px;font-size:.88rem;color:var(--ink-soft)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.score{display:flex;gap:14px;font-size:.88rem;color:var(--ink-soft)}
+.score b{font-weight:400;color:var(--ink);font-size:1.05rem}
+.sq > .hanamaru{position:absolute;inset:3%;width:94%;height:94%;z-index:2;opacity:0;pointer-events:none}
+.hanamaru path{fill:none;stroke:var(--red);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.listen{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:.88rem;color:var(--ink-soft);margin-top:-4px}
+.listen svg{width:16px;height:16px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:420px}
+.choice{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;min-height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:6px}
+.choice .main{font-size:1.45rem;line-height:1.25}
+.choice.kana .main{font-family:var(--kana);font-size:2.1rem;font-weight:600}
+.choice .sub{font-size:.78rem;color:var(--ink-soft)}
+.choice .n{position:absolute}
+.choice.right{border-color:var(--ok);background:var(--ok-soft)}
+.choice.wrong{border-color:var(--red);background:var(--red-soft)}
+.choice.wrong .main{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
+@media (hover:hover){ .choice:not([aria-disabled="true"]):hover{border-color:var(--ink)} }
+@media (prefers-reduced-motion: no-preference){
+  .choice.wrong{animation:shake .32s ease}
+  @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+}
+.feedback{width:100%;max-width:420px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.feedback .fb-main{font-size:1.02rem}
+.feedback .tip{font-size:.9rem;color:var(--ink-soft);margin-bottom:6px}
+.quiz-note{font-size:.82rem;color:var(--ink-soft);text-align:center;max-width:420px}
+.toast{min-height:1.5em;font-size:.95rem;color:var(--red);text-align:center}
+
+footer{margin-top:44px;padding-top:18px;border-top:1.5px dashed var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.82rem;color:var(--ink-soft)}
+.linkish{border:0;background:transparent;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;padding:6px 0;font-size:.82rem}
+
+/* detail sheet */
+.scrim{position:fixed;inset:0;background:rgba(15,25,20,.45);z-index:20;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;max-width:560px;margin:0 auto;background:var(--surface);border-radius:18px 18px 0 0;padding:22px 20px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);visibility:hidden;transition:transform .24s ease,visibility .24s}
+body.sheet-open .scrim{opacity:1;visibility:visible}
+body.sheet-open .sheet{transform:none;visibility:visible}
+@media (prefers-reduced-motion: reduce){ .sheet,.scrim{transition:none} }
+.sheet-body{display:flex;gap:18px;align-items:center}
+.sheet .sq{width:7.5rem;height:7.5rem;flex:none}
+.sheet .sq span{font-family:var(--kana);font-size:4.7rem;line-height:1}
+.s-read{font-size:1.9rem;line-height:1.2}
+.s-read span{font-size:1.05rem;color:var(--ink-soft);margin-left:6px}
+.s-tip{font-size:.95rem;margin-top:6px}
+.s-stat{font-size:.82rem;color:var(--ink-soft);margin-top:6px}
+.sheet .btn-row{margin-top:20px;max-width:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="hero" aria-hidden="true">
+        <span class="sq">ひ</span><span class="sq">ら</span><span class="sq">が</span><span class="sq">な</span>
+      </div>
+      <h1>히라가나 외우기</h1>
+    </div>
+    <button class="sound" id="soundBtn" aria-pressed="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="waves" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="slash" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span class="lbl">소리 켜짐</span>
+    </button>
+  </header>
+
+  <div class="progress">
+    <div class="meter" id="meter" aria-hidden="true"></div>
+    <p class="meter-text">외운 글자 <b id="mCount">0</b> / 46</p>
+  </div>
+
+  <nav class="tabs" role="tablist" aria-label="학습 방법">
+    <button class="tab" role="tab" data-tab="chart" aria-controls="view-chart">오십음표</button>
+    <button class="tab" role="tab" data-tab="cards" aria-controls="view-cards">카드</button>
+    <button class="tab" role="tab" data-tab="quiz" aria-controls="view-quiz">퀴즈</button>
+  </nav>
+
+  <div class="picker" id="picker">
+    <div class="picker-head"><span>연습할 줄 고르기</span><span id="poolInfo"></span></div>
+    <div class="chips" id="chips"></div>
+    <p class="picker-note" id="pickerNote" aria-live="polite"></p>
+  </div>
+
+  <!-- chart -->
+  <section id="view-chart" role="tabpanel">
+    <p class="lead">가로줄은 자음, 세로줄은 모음이에요. 글자를 누르면 소리와 외우는 팁이 나와요. 하루에 한두 줄씩 카드로 익히고, 퀴즈로 확인해 보세요.</p>
+    <div class="chart" id="chart"></div>
+    <p class="legend"><i></i>퀴즈에서 3번 연속 맞힌 글자에 빨간 동그라미가 생겨요.</p>
+  </section>
+
+  <!-- cards -->
+  <section id="view-cards" role="tabpanel" hidden>
+    <div class="stage" id="cardStage">
+      <p class="counter" id="cardLeft"></p>
+      <button class="sq lg" id="cardSq" aria-label="카드 뒤집기"><span class="big" id="cardK"></span></button>
+      <div class="reveal" id="cardReveal" aria-live="polite">
+        <p class="read"><b id="cardKo" style="font-weight:400"></b><span id="cardRo"></span></p>
+        <p class="tip" id="cardTip"></p>
+      </div>
+      <div class="btn-row" id="cardBtnsA">
+        <button class="btn primary" id="btnFlip">정답 보기</button>
+      </div>
+      <div class="btn-row" id="cardBtnsB" hidden>
+        <button class="btn" id="btnAgain">다시 볼게요</button>
+        <button class="btn primary" id="btnKnow">외웠어요</button>
+      </div>
+    </div>
+    <div class="done" id="cardDone" hidden>
+      <svg class="flower hanamaru" viewBox="0 0 100 100" aria-hidden="true" style="opacity:1"><path id="doneFlower"/></svg>
+      <p id="doneText"></p>
+      <div class="btn-row">
+        <button class="btn" id="btnReshuffle">카드 다시 섞기</button>
+        <button class="btn primary" id="btnGoQuiz">퀴즈로 확인하기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- quiz -->
+  <section id="view-quiz" role="tabpanel" hidden>
+    <div class="quiz-bar">
+      <div class="seg" role="group" aria-label="퀴즈 방식">
+        <button data-mode="k2s">글자 → 소리</button>
+        <button data-mode="s2k">소리 → 글자</button>
+      </div>
+      <div class="score"><span>맞힘 <b id="qRight">0</b> / <span id="qTotal">0</span></span><span>연속 <b id="qStreak">0</b></span></div>
+    </div>
+    <div class="stage">
+      <div class="sq lg" id="qSq">
+        <span class="big" id="qPrompt"></span>
+        <span class="prompt-ro" id="qPromptRo"></span>
+        <svg class="hanamaru" id="hm" viewBox="0 0 100 100" aria-hidden="true"><path id="hmPath"/></svg>
+      </div>
+      <button class="listen speak-only" id="qPlay">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        다시 듣기
+      </button>
+      <div class="choices" id="choices"></div>
+      <p class="toast" id="toast" aria-live="polite"></p>
+      <div class="feedback" id="fb" hidden>
+        <p class="fb-main" id="fbText"></p>
+        <p class="tip" id="fbTip"></p>
+        <button class="btn primary" id="fbNext">다음 문제</button>
+      </div>
+      <p class="quiz-note">틀린 글자는 더 자주 나와요. 키보드라면 1~4번 키로 고를 수 있어요.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>기록은 이 브라우저에만 저장돼요.</span>
+    <button class="linkish" id="resetBtn">퀴즈 기록 지우기</button>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="글자 자세히 보기" aria-hidden="true">
+  <div class="sheet-body">
+    <div class="sq"><span id="sK"></span></div>
+    <div>
+      <p class="s-read"><span id="sKo" style="margin:0;font-size:inherit;color:inherit"></span><span id="sRo"></span></p>
+      <p class="s-tip" id="sTip"></p>
+      <p class="s-stat" id="sStat"></p>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn speak-only" id="sPlay">소리 듣기</button>
+    <button class="btn primary" id="sClose">닫기</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(s){ return document.querySelector(s); };
+  var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+
+  var DATA = [
+    ['a','あ','아','a',0,'십자(十) 아래를 동그랗게 감아요. 오른쪽 위에 점이 따로 있으면 お(오)예요.'],
+    ['a','い','이','i',1,'짧은 획 두 개 → 숫자 2(이)로 기억해요.'],
+    ['a','う','우','u',2,'위에 점 하나, 아래는 つ(츠)처럼 둥글게 휘어요.'],
+    ['a','え','에','e',3,'위에 점, 아래는 지그재그로 꺾였다가 꼬리를 쭉 빼요.'],
+    ['a','お','오','o',4,'오른쪽 위에 점! \u2018오\u2019른쪽의 오로 기억해요.'],
+    ['ka','か','카','ka',0,'칼을 휘두르는 모양이에요. 오른쪽 작은 획은 칼바람.'],
+    ['ka','き','키','ki',1,'가로줄 두 개짜리 열쇠(key) 모양. 가로줄이 하나면 さ(사).'],
+    ['ka','く','쿠','ku',2,'새 부리처럼 < 모양. 부리로 쿡 쪼아요.'],
+    ['ka','け','케','ke',3,'왼쪽 세로줄 옆에 꼬챙이 하나. 꼬챙이에 꽂힌 케밥.'],
+    ['ka','こ','코','ko',4,'짧은 두 줄. 코 밑으로 흐르는 콧물 두 줄.'],
+    ['sa','さ','사','sa',0,'き(키)에서 가로줄 하나를 뺀 모양. 좌우로 뒤집으면 ち(치).'],
+    ['sa','し','시','shi',1,'낚싯바늘 모양 → 낚\u2018시\u2019.'],
+    ['sa','す','스','su',2,'줄 가운데 고리가 달려 흔들려요. 스윙하는 그네.'],
+    ['sa','せ','세','se',3,'가로줄 하나에 세로줄 둘, 모두 \u2018세\u2019 획이에요.'],
+    ['sa','そ','소','so',4,'지그재그로 꺾여 내려와요. 소가 지나간 꼬불길.'],
+    ['ta','た','타','ta',0,'왼쪽 십자 옆에 こ(코)가 붙어 있어요.'],
+    ['ta','ち','치','chi',1,'숫자 5를 닮았어요. 좌우로 뒤집으면 さ(사).'],
+    ['ta','つ','츠','tsu',2,'밀려오는 파도 → 쓰나미(tsunami)의 つ.'],
+    ['ta','て','테','te',3,'알파벳 T를 흘려 쓴 모양 → 테(T).'],
+    ['ta','と','토','to',4,'발가락(toe)에 가시가 박힌 모양 → 토.'],
+    ['na','な','나','na',0,'십자 옆에 매듭이 달렸어요. 나무에 묶은 리본.'],
+    ['na','に','니','ni',1,'세로줄 옆에 こ(코)가 붙어 있어요.'],
+    ['na','ぬ','누','nu',2,'꼬인 국수(누들) 끝에 작은 고리. 고리가 없으면 め(메).'],
+    ['na','ね','네','ne',3,'끝이 고양이 꼬리처럼 말려요. 고양이는 일본어로 ねこ(네코).'],
+    ['na','の','노','no',4,'금지 표시처럼 한 번에 빙글 → No!'],
+    ['ha','は','하','ha',0,'세로줄 옆에 고리 달린 십자. 위에 가로줄이 하나 더 있으면 ほ(호).'],
+    ['ha','ひ','히','hi',1,'히죽 웃는 입 모양 → 히히.'],
+    ['ha','ふ','후','fu',2,'촛불을 후~ 불어서 불꽃이 흩어진 모양.'],
+    ['ha','へ','헤','he',3,'산 하나. 가타카나 ヘ와 모양이 거의 같아요.'],
+    ['ha','ほ','호','ho',4,'は(하) 위에 가로줄을 하나 더 그으면 ほ.'],
+    ['ma','ま','마','ma',0,'가로줄 두 개 아래로 고리. ほ(호)의 오른쪽 부분과 같아요.'],
+    ['ma','み','미','mi',1,'고리를 만들고 길게 빠져나가요. 숫자 21처럼 보여요.'],
+    ['ma','む','무','mu',2,'す(스)처럼 고리가 있고, 오른쪽에 점이 하나 더 있어요.'],
+    ['ma','め','메','me',3,'눈동자 모양. 일본어로 \u2018눈\u2019이 め예요. 끝에 고리가 있으면 ぬ(누).'],
+    ['ma','も','모','mo',4,'し(시) 낚싯바늘에 가로줄 두 개를 꿰었어요.'],
+    ['ya','や','야','ya',0,'활을 쏘는 모양. 야! 하고 쏴요.'],
+    ['ya','ゆ','유','yu',2,'둥근 몸을 세로줄이 꿰뚫은 물고기 모양.'],
+    ['ya','よ','요','yo',4,'줄에 매달린 요요.'],
+    ['ra','ら','라','ra',0,'ち(치)와 비슷하지만 위가 점처럼 떨어져 있어요.'],
+    ['ra','り','리','ri',1,'길게 늘어뜨린 리본 두 줄. い(이)보다 오른쪽이 훨씬 길어요.'],
+    ['ra','る','루','ru',2,'끝에 고리 → 루프(loop). 고리가 없으면 ろ(로).'],
+    ['ra','れ','레','re',3,'ね(네)와 왼쪽이 같고, 끝은 꼬리처럼 쭉 뻗어요.'],
+    ['ra','ろ','로','ro',4,'る(루)에서 끝의 고리를 뺀 모양.'],
+    ['wa','わ','와','wa',0,'ね(네), れ(레)와 왼쪽이 같고, 끝은 둥글게 닫아요.'],
+    ['wa','を','오','wo',4,'\u2018~을/를\u2019이라는 조사로만 써요. 발음은 お(오)와 같아요.'],
+    ['wa','ん','응','n',-1,'알파벳 n을 흘려 쓴 모양. 단어 끝 받침처럼 써요.']
+  ].map(function(r){ return {row:r[0],k:r[1],ko:r[2],ro:r[3],col:r[4],tip:r[5]}; });
+
+  var ROWS = [['a','あ'],['ka','か'],['sa','さ'],['ta','た'],['na','な'],['ha','は'],['ma','ま'],['ya','や'],['ra','ら'],['wa','わ']];
+  var CONS = {a:'',ka:'k',sa:'s',ta:'t',na:'n',ha:'h',ma:'m',ya:'y',ra:'r',wa:'w'};
+  var SIMILAR = {
+    'あ':['お','め'],'お':['あ','む'],'い':['り','こ'],'り':['い','け'],'さ':['ち','き'],'ち':['さ','ら'],
+    'き':['さ','ま'],'ぬ':['め','ね'],'め':['ぬ','あ'],'ね':['れ','わ'],'れ':['ね','わ'],'わ':['ね','れ'],
+    'は':['ほ','け'],'ほ':['は','ま'],'ま':['ほ','よ'],'る':['ろ','ら'],'ろ':['る','そ'],'こ':['に','い'],
+    'に':['こ','た'],'た':['に','な'],'な':['た','ま'],'け':['は','い'],'し':['つ','も'],'つ':['し','う'],
+    'う':['つ','ら'],'ら':['う','ち'],'す':['む','お'],'む':['す','お'],'へ':['く','し'],'く':['へ','し'],
+    'そ':['ろ','て'],'て':['そ','つ'],'ゆ':['よ','な'],'よ':['ゆ','ま'],'ん':['の','わ'],'の':['ん','め'],
+    'を':['も','ち'],'も':['し','を']
+  };
+  var BYK = {}; DATA.forEach(function(d){ BYK[d.k] = d; });
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- state & storage ---------- */
+  var STORE = 'hiragana46-v1';
+  var state = {prog:{}, rows:['a','ka'], sound:true, mode:'k2s', tab:'chart'};
+  try {
+    var raw = localStorage.getItem(STORE);
+    if (raw) { var s = JSON.parse(raw); if (s && typeof s === 'object') { for (var key in s) state[key] = s[key]; } }
+  } catch(e) {}
+  if (!state.prog || typeof state.prog !== 'object') state.prog = {};
+  if (!Array.isArray(state.rows)) state.rows = ['a','ka'];
+  state.rows = state.rows.filter(function(r){ return CONS.hasOwnProperty(r); });
+  if (!state.rows.length) state.rows = ['a','ka'];
+  if (state.mode !== 's2k') state.mode = 'k2s';
+  if (['chart','cards','quiz'].indexOf(state.tab) < 0) state.tab = 'chart';
+
+  function save(){ try { localStorage.setItem(STORE, JSON.stringify(state)); } catch(e) {} }
+  function P(k){ if (!state.prog[k]) state.prog[k] = {c:0,w:0,s:0}; return state.prog[k]; }
+  function mastered(k){ var p = state.prog[k]; return !!(p && p.s >= 3); }
+  function pool(){ return DATA.filter(function(d){ return state.rows.indexOf(d.row) >= 0; }); }
+  function shuffle(a){ for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function josa(d){ return d.k === 'ん' ? '이에요' : '예요'; }
+
+  /* ---------- speech ---------- */
+  var canSpeak = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
+  var jaVoice = null;
+  function loadVoices(){ try { var vs = speechSynthesis.getVoices(); jaVoice = vs.filter(function(v){ return /^ja/i.test(v.lang); })[0] || null; } catch(e) {} }
+  if (canSpeak) {
+    loadVoices();
+    try { speechSynthesis.addEventListener('voiceschanged', loadVoices); } catch(e) { speechSynthesis.onvoiceschanged = loadVoices; }
+  }
+  function speak(text, force){
+    if (!canSpeak || (!state.sound && !force)) return;
+    try {
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'ja-JP'; if (jaVoice) u.voice = jaVoice; u.rate = 0.85;
+      if (speechSynthesis.paused) speechSynthesis.resume();
+      if (speechSynthesis.speaking || speechSynthesis.pending) {
+        /* iOS Safari drops an utterance queued right after cancel(), so wait a beat */
+        speechSynthesis.cancel();
+        setTimeout(function(){ try { speechSynthesis.speak(u); } catch(e) {} }, 60);
+      } else {
+        speechSynthesis.speak(u);
+      }
+    } catch(e) {}
+  }
+  function renderSound(){
+    var b = $('#soundBtn');
+    if (!canSpeak) { b.hidden = true; $$('.speak-only').forEach(function(x){ x.hidden = true; }); return; }
+    b.setAttribute('aria-pressed', String(state.sound));
+    b.classList.toggle('off', !state.sound);
+    b.querySelector('.lbl').textContent = state.sound ? '소리 켜짐' : '소리 꺼짐';
+  }
+  $('#soundBtn').addEventListener('click', function(){ state.sound = !state.sound; save(); renderSound(); });
+
+  /* ---------- hanamaru (teacher's flower circle) ---------- */
+  function hanamaruD(){
+    var d = '', cx = 50, cy = 50, i, t, a, r;
+    var turns = 2.3, steps = 140, start = -Math.PI / 2;
+    for (i = 0; i <= steps; i++) {
+      t = i / steps; a = start + t * turns * 2 * Math.PI; r = 2 + t * 15;
+      d += (i ? 'L' : 'M') + (cx + r * Math.cos(a)).toFixed(2) + ' ' + (cy + r * Math.sin(a)).toFixed(2);
+    }
+    var R = 31, dd = 7, n = 8, t0 = a, span = 2 * Math.PI + 0.35, steps2 = 420;
+    for (i = 0; i <= steps2; i++) {
+      t = t0 + (i / steps2) * span;
+      var x = cx + R * Math.cos(t) + dd * Math.cos(-n * t);
+      var y = cy + R * Math.sin(t) + dd * Math.sin(-n * t);
+      d += 'L' + x.toFixed(2) + ' ' + y.toFixed(2);
+    }
+    return d;
+  }
+  var HM_D = hanamaruD();
+  $('#hmPath').setAttribute('d', HM_D);
+  $('#doneFlower').setAttribute('d', HM_D);
+  var hmLen = 0;
+  function showHM(){
+    var svg = $('#hm'), p = $('#hmPath');
+    if (!hmLen) { try { hmLen = p.getTotalLength(); } catch(e) {} if (!hmLen) hmLen = 1500; }
+    p.style.transition = 'none';
+    p.style.strokeDasharray = hmLen;
+    p.style.strokeDashoffset = reduce ? 0 : hmLen;
+    svg.style.opacity = '0.92';
+    if (reduce) return;
+    p.getBoundingClientRect();
+    p.style.transition = 'stroke-dashoffset .7s cubic-bezier(.4,.1,.3,1)';
+    p.style.strokeDashoffset = 0;
+  }
+  function hideHM(){ $('#hm').style.opacity = '0'; }
+
+  /* ---------- header meter ---------- */
+  function renderMeter(){
+    var n = 0, html = '';
+    DATA.forEach(function(d){ var m = mastered(d.k); if (m) n++; html += '<i class="' + (m ? 'on' : '') + '"></i>'; });
+    $('#meter').innerHTML = html;
+    $('#mCount').textContent = n;
+  }
+
+  /* ---------- chart ---------- */
+  function cellBtn(d){
+    return '<button class="cell' + (mastered(d.k) ? ' m' : '') + '" data-k="' + d.k + '" aria-label="' + d.k + ', ' + d.ko + ', ' + d.ro + (mastered(d.k) ? ', 외운 글자' : '') + '">' +
+      '<span class="k">' + d.k + '</span><span class="r">' + d.ko + '</span></button>';
+  }
+  function renderChart(){
+    var html = '<div></div>';
+    ['a','i','u','e','o'].forEach(function(v){ html += '<div class="colhead">' + v + '</div>'; });
+    ROWS.forEach(function(r){
+      html += '<div class="rowhead">' + CONS[r[0]] + '</div>';
+      for (var c = 0; c < 5; c++) {
+        var it = null;
+        for (var i = 0; i < DATA.length; i++) { if (DATA[i].row === r[0] && DATA[i].col === c) { it = DATA[i]; break; } }
+        html += it ? cellBtn(it) : '<div class="cell empty" aria-hidden="true"></div>';
+      }
+    });
+    html += '<div class="rowhead"></div>' + cellBtn(BYK['ん']);
+    for (var j = 0; j < 4; j++) html += '<div class="cell blank" aria-hidden="true"></div>';
+    $('#chart').innerHTML = html;
+  }
+  $('#chart').addEventListener('click', function(e){
+    var b = e.target.closest('button.cell'); if (b) openSheet(b.dataset.k);
+  });
+
+  /* ---------- detail sheet ---------- */
+  var lastFocus = null, sheetK = null;
+  function openSheet(k){
+    var d = BYK[k], p = state.prog[k];
+    sheetK = k;
+    $('#sK').textContent = d.k; $('#sKo').textContent = d.ko; $('#sRo').textContent = d.ro; $('#sTip').textContent = d.tip;
+    $('#sStat').textContent = (p && (p.c || p.w)) ? ('퀴즈에서 ' + p.c + '번 맞히고 ' + p.w + '번 틀렸어요.' + (mastered(k) ? ' 외운 글자예요.' : '')) : '아직 퀴즈에서 만나지 않은 글자예요.';
+    lastFocus = document.activeElement;
+    document.body.classList.add('sheet-open');
+    $('#sheet').setAttribute('aria-hidden', 'false');
+    speak(k);
+    setTimeout(function(){ $('#sClose').focus({preventScroll:true}); }, 30);
+  }
+  function closeSheet(){
+    if (!document.body.classList.contains('sheet-open')) return;
+    document.body.classList.remove('sheet-open');
+    $('#sheet').setAttribute('aria-hidden', 'true');
+    if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true});
+  }
+  $('#sClose').addEventListener('click', closeSheet);
+  $('#scrim').addEventListener('click', closeSheet);
+  $('#sPlay').addEventListener('click', function(){ if (sheetK) speak(sheetK, true); });
+
+  /* ---------- row picker ---------- */
+  var noteTimer = null;
+  function renderRows(){
+    var all = state.rows.length === ROWS.length;
+    var html = ROWS.map(function(r){
+      var on = state.rows.indexOf(r[0]) >= 0;
+      return '<button class="chip" data-row="' + r[0] + '" aria-pressed="' + on + '">' + (r[0] === 'wa' ? 'わ행 + ん' : r[1] + '행') + '</button>';
+    }).join('');
+    html += '<button class="chip all" data-row="__all">' + (all ? 'あ행만 남기기' : '전체 고르기') + '</button>';
+    $('#chips').innerHTML = html;
+    $('#poolInfo').textContent = '고른 글자 ' + pool().length + '자';
+  }
+  $('#chips').addEventListener('click', function(e){
+    var b = e.target.closest('.chip'); if (!b) return;
+    var id = b.dataset.row;
+    if (id === '__all') {
+      state.rows = state.rows.length === ROWS.length ? ['a'] : ROWS.map(function(r){ return r[0]; });
+    } else {
+      var i = state.rows.indexOf(id);
+      if (i >= 0) {
+        if (state.rows.length === 1) {
+          $('#pickerNote').textContent = '최소 한 줄은 골라야 해요.';
+          clearTimeout(noteTimer); noteTimer = setTimeout(function(){ $('#pickerNote').textContent = ''; }, 2200);
+          return;
+        }
+        state.rows.splice(i, 1);
+      } else {
+        state.rows.push(id);
+        state.rows.sort(function(a, b){ return idx(a) - idx(b); });
+      }
+    }
+    save(); renderRows(); onPoolChange();
+  });
+  function idx(id){ for (var i = 0; i < ROWS.length; i++) if (ROWS[i][0] === id) return i; return 0; }
+  function onPoolChange(){
+    deck = null; cur = null;
+    if (state.tab === 'cards') buildDeck();
+    if (state.tab === 'quiz') nextQ();
+  }
+
+  /* ---------- tabs ---------- */
+  function setTab(t){
+    state.tab = t; save();
+    $$('.tab').forEach(function(b){ b.setAttribute('aria-selected', String(b.dataset.tab === t)); b.tabIndex = b.dataset.tab === t ? 0 : -1; });
+    ['chart','cards','quiz'].forEach(function(id){ $('#view-' + id).hidden = id !== t; });
+    $('#picker').hidden = t === 'chart';
+    if (t === 'chart') renderChart();
+    if (t === 'cards' && !deck) buildDeck();
+    if (t === 'quiz' && !cur) nextQ();
+    if (t !== 'quiz') clearTimeout(nextTimer);
+  }
+  $$('.tab').forEach(function(b){ b.addEventListener('click', function(){ setTab(b.dataset.tab); }); });
+  $('.tabs').addEventListener('keydown', function(e){
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    var tabs = $$('.tab'), i = tabs.indexOf(document.activeElement); if (i < 0) return;
+    var n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+    n.focus(); setTab(n.dataset.tab);
+  });
+
+  /* ---------- cards ---------- */
+  var deck = null, deckSize = 0, flipped = false;
+  function buildDeck(){
+    deck = shuffle(pool().map(function(d){ return d.k; }));
+    deckSize = deck.length;
+    renderCard();
+  }
+  function renderCard(){
+    var done = deck.length === 0;
+    $('#cardStage').hidden = done; $('#cardDone').hidden = !done;
+    if (done) { $('#doneText').textContent = deckSize + '장을 모두 외웠어요!'; return; }
+    var d = BYK[deck[0]]; flipped = false;
+    $('#cardK').textContent = d.k; $('#cardKo').textContent = d.ko; $('#cardRo').textContent = d.ro; $('#cardTip').textContent = d.tip;
+    $('#cardReveal').classList.remove('show');
+    $('#cardBtnsA').hidden = false; $('#cardBtnsB').hidden = true;
+    $('#cardLeft').textContent = '남은 카드 ' + deck.length + '장';
+  }
+  function flip(){
+    if (!deck || !deck.length) return;
+    if (flipped) { speak(deck[0], true); return; }
+    flipped = true;
+    $('#cardReveal').classList.add('show');
+    $('#cardBtnsA').hidden = true; $('#cardBtnsB').hidden = false;
+    speak(deck[0]);
+  }
+  $('#cardSq').addEventListener('click', flip);
+  $('#btnFlip').addEventListener('click', function(){ flip(); $('#btnKnow').focus({preventScroll:true}); });
+  $('#btnAgain').addEventListener('click', function(){
+    var k = deck.shift(); deck.splice(Math.min(3, deck.length), 0, k); renderCard(); $('#btnFlip').focus({preventScroll:true});
+  });
+  $('#btnKnow').addEventListener('click', function(){ deck.shift(); renderCard(); if (deck.length) $('#btnFlip').focus({preventScroll:true}); });
+  $('#btnReshuffle').addEventListener('click', buildDeck);
+  $('#btnGoQuiz').addEventListener('click', function(){ setTab('quiz'); });
+
+  /* ---------- quiz ---------- */
+  var cur = null, lastK = null, answered = false, nextTimer = null;
+  var session = {r:0, t:0, streak:0};
+  function weight(k){
+    var p = state.prog[k];
+    if (!p) return 1.5;
+    if (p.s >= 3) return 0.35;
+    return 1 + Math.min(p.w, 4) * 0.5;
+  }
+  function pickWeighted(list){
+    var ws = list.map(function(d){ return (d.k === lastK && list.length > 1) ? 0 : weight(d.k); });
+    var sum = ws.reduce(function(a, b){ return a + b; }, 0), r = Math.random() * sum;
+    for (var i = 0; i < list.length; i++) { if (ws[i] <= 0) continue; r -= ws[i]; if (r <= 0) return list[i]; }
+    for (var j = 0; j < list.length; j++) if (ws[j] > 0) return list[j];
+    return list[0];
+  }
+  function makeChoices(ans){
+    var used = {}; used[ans.ko] = true;
+    var out = [ans], p = pool();
+    function add(d){ if (out.length < 4 && d && !used[d.ko]) { used[d.ko] = true; out.push(d); } }
+    shuffle((SIMILAR[ans.k] || []).map(function(k){ return BYK[k]; }).filter(function(d){ return p.indexOf(d) >= 0; })).slice(0, 2).forEach(add);
+    shuffle(p.slice()).forEach(add);
+    if (out.length < 4) shuffle(DATA.slice()).forEach(add);
+    return shuffle(out);
+  }
+  function renderStats(){ $('#qRight').textContent = session.r; $('#qTotal').textContent = session.t; $('#qStreak').textContent = session.streak; }
+  function renderMode(){ $$('.seg button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode)); }); }
+  function nextQ(){
+    clearTimeout(nextTimer); hideHM();
+    var p = pool(); cur = pickWeighted(p); lastK = cur.k; answered = false;
+    var k2s = state.mode === 'k2s';
+    var prm = $('#qPrompt');
+    prm.textContent = k2s ? cur.k : cur.ko;
+    prm.className = 'big' + (k2s ? '' : ' ko');
+    $('#qPromptRo').textContent = k2s ? '' : cur.ro;
+    $('#qPlay').hidden = k2s || !canSpeak;
+    $('#choices').innerHTML = makeChoices(cur).map(function(d, i){
+      return '<button class="choice' + (k2s ? '' : ' kana') + '" data-k="' + d.k + '" aria-label="' + (i + 1) + '번, ' + (k2s ? d.ko + ' ' + d.ro : d.k) + '">' +
+        '<span class="main">' + (k2s ? d.ko : d.k) + '</span>' + (k2s ? '<span class="sub">' + d.ro + '</span>' : '') + '</button>';
+    }).join('');
+    $('#fb').hidden = true; $('#toast').textContent = '';
+    if (!k2s) speak(cur.k);
+  }
+  function answer(btn){
+    if (answered || !cur || !btn) return;
+    answered = true;
+    var picked = BYK[btn.dataset.k], ok = picked.k === cur.k, p = P(cur.k), wasMastered = p.s >= 3;
+    var btns = $$('#choices .choice');
+    btns.forEach(function(b){ b.setAttribute('aria-disabled', 'true'); });
+    session.t++;
+    if (ok) {
+      p.c++; p.s++; session.r++; session.streak++;
+      btn.classList.add('right'); showHM(); speak(cur.k);
+      if (!wasMastered && p.s >= 3) $('#toast').textContent = cur.k + '(' + cur.ko + ')를 외웠어요!';
+      nextTimer = setTimeout(nextQ, wasMastered || p.s < 3 ? 1150 : 1700);
+    } else {
+      p.w++; p.s = 0; session.streak = 0;
+      btn.classList.add('wrong');
+      btns.forEach(function(b){ if (b.dataset.k === cur.k) b.classList.add('right'); });
+      $('#fbText').textContent = '정답은 ' + cur.k + '(' + cur.ko + ')' + josa(cur) + '. 고른 답은 ' + picked.k + '(' + picked.ko + ')' + josa(picked) + '.';
+      $('#fbTip').textContent = cur.tip;
+      $('#fb').hidden = false;
+      speak(cur.k);
+      $('#fbNext').focus({preventScroll:true});
+    }
+    save(); renderMeter(); renderStats();
+  }
+  $('#choices').addEventListener('click', function(e){ answer(e.target.closest('.choice')); });
+  $('#fbNext').addEventListener('click', nextQ);
+  $('#qPlay').addEventListener('click', function(){ if (cur) speak(cur.k, true); });
+  $$('.seg button').forEach(function(b){
+    b.addEventListener('click', function(){ if (state.mode === b.dataset.mode) return; state.mode = b.dataset.mode; save(); renderMode(); nextQ(); });
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') { closeSheet(); return; }
+    if (document.body.classList.contains('sheet-open')) return;
+    if (state.tab === 'quiz' && !answered && /^[1-4]$/.test(e.key)) {
+      var b = $$('#choices .choice')[Number(e.key) - 1]; if (b) { e.preventDefault(); answer(b); }
+    }
+  });
+
+  /* ---------- reset ---------- */
+  var resetArm = null;
+  $('#resetBtn').addEventListener('click', function(){
+    var b = this;
+    if (!resetArm) {
+      b.textContent = '한 번 더 누르면 지워져요';
+      resetArm = setTimeout(function(){ resetArm = null; b.textContent = '퀴즈 기록 지우기'; }, 3000);
+      return;
+    }
+    clearTimeout(resetArm); resetArm = null;
+    state.prog = {}; session = {r:0, t:0, streak:0};
+    save(); renderMeter(); renderStats(); renderChart();
+    b.textContent = '기록을 지웠어요';
+    setTimeout(function(){ b.textContent = '퀴즈 기록 지우기'; }, 1600);
+  });
+
+  /* ---------- init ---------- */
+  renderSound(); renderMeter(); renderRows(); renderMode(); renderStats();
+  setTab(state.tab);
+})();
+</script>
+</body>
+</html>
